@@ -1,8 +1,8 @@
-# Day Planner Pro - Task Management System
+ Day Planner Pro - Task Management System
 
 A comprehensive task and project management system with team collaboration features.
 
-🌟 Key Features
+ Key Features
 
  1. Task Management
 - Create, edit, and delete tasks
@@ -80,7 +80,7 @@ A comprehensive task and project management system with team collaboration featu
 - Milestone tags
 - Custom categories
 
- 🔧 Technical Features
+- Technical Features
 
  Storage
 - Local storage for data persistence
