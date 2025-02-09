@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Planner Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ My Day Planner ✨</h1>
+            <div class="date-display">
+                <span id="current-date"></span>
+                <div class="weather-widget" id="weather-widget">
+                    <i class="fas fa-cloud-sun"></i> Loading weather...
+                </div>
+            </div>
+        </header>
+
+        <div class="planner-controls">
+            <div class="left-controls">
+                <button id="add-task" class="btn primary-btn">
+                    <i class="fas fa-plus"></i> Add Task
+                </button>
+                <button id="export-tasks" class="btn secondary-btn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+            <div class="right-controls">
+                <select id="filter-tasks">
+                    <option value="all">All Tasks</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="important">Important</option>
+                </select>
+                <button id="theme-toggle" class="btn theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <i class="fas fa-tasks"></i>
+                <span id="total-tasks">0 Total</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-check-circle"></i>
+                <span id="completed-tasks">0 Completed</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <span id="pending-tasks">0 Pending</span>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <div class="team-header">
+                <h3>Team Members</h3>
+                <button id="add-member" class="btn secondary-btn">
+                    <i class="fas fa-user-plus"></i> Add Member
+                </button>
+            </div>
+            <div class="team-members" id="team-members">
+                <!-- Team members will be added here dynamically -->
+            </div>
+        </div>
+
+        <div class="tasks-container">
+            <div id="task-list"></div>
+        </div>
+
+        <div class="kanban-board">
+            <div class="kanban-column" id="todo-column">
+                <h3>To Do</h3>
+                <div class="kanban-items" data-status="todo"></div>
+            </div>
+            <div class="kanban-column" id="in-progress-column">
+                <h3>In Progress</h3>
+                <div class="kanban-items" data-status="in-progress"></div>
+            </div>
+            <div class="kanban-column" id="review-column">
+                <h3>Review</h3>
+                <div class="kanban-items" data-status="review"></div>
+            </div>
+            <div class="kanban-column" id="done-column">
+                <h3>Done</h3>
+                <div class="kanban-items" data-status="done"></div>
+            </div>
+        </div>
+
+        <!-- Add Task Modal -->
+        <div id="task-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New Task</h2>
+                <form id="task-form">
+                    <div class="form-section">
+                        <input type="text" id="task-title" placeholder="Task Title" required>
+                        <select id="task-template" class="template-select">
+                            <option value="">Select Template</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="meeting">Meeting</option>
+                        </select>
+                    </div>
+
+                    <div class="form-section parent-task">
+                        <label>Parent Task (Optional)</label>
+                        <select id="parent-task">
+                            <option value="">No Parent Task</option>
+                        </select>
+                    </div>
+
+                    <textarea id="task-description" placeholder="Task Description"></textarea>
+
+                    <div class="form-row">
+                        <div class="date-group">
+                            <label>Start Date</label>
+                            <input type="date" id="task-start-date" required>
+                        </div>
+                        <div class="date-group">
+                            <label>End Date</label>
+                            <input type="date" id="task-end-date" required>
+                        </div>
+                        <input type="time" id="task-time" required>
+                    </div>
+
+                    <div class="form-row">
+                        <select id="task-priority">
+                            <option value="low">Low Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                        <select id="milestone">
+                            <option value="">Select Milestone</option>
+                            <option value="v1.0">Version 1.0</option>
+                            <option value="v1.1">Version 1.1</option>
+                            <option value="v2.0">Version 2.0</option>
+                        </select>
+                    </div>
+
+                    <div class="custom-fields">
+                        <h4>Custom Fields</h4>
+                        <div id="custom-fields-container">
+                            <!-- Dynamic custom fields will be added here -->
+                        </div>
+                        <button type="button" class="btn secondary-btn" id="add-custom-field">
+                            <i class="fas fa-plus"></i> Add Custom Field
+                        </button>
+                    </div>
+
+                    <div class="notifications-section">
+                        <h4>Notifications</h4>
+                        <div class="assignees">
+                            <label>Assignees</label>
+                            <select multiple id="task-assignees">
+                                <option value="user1">John Doe</option>
+                                <option value="user2">Jane Smith</option>
+                                <option value="user3">Mike Johnson</option>
+                            </select>
+                        </div>
+                        <div class="notification-options">
+                            <label>
+                                <input type="checkbox" id="notify-assignees">
+                                Notify assignees
+                            </label>
+                            <label>
+                                <input type="checkbox" id="notify-watchers">
+                                Add watchers
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn primary-btn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Notes Widget -->
+        <div class="quick-notes-widget">
+            <div class="notes-header">
+                <h3>Quick Notes</h3>
+                <button id="save-notes" class="btn small-btn">Save</button>
+            </div>
+            <textarea id="quick-notes" placeholder="Write your quick notes here..."></textarea>
+        </div>
+
+        <!-- Add Template Modal -->
+        <div id="template-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Manage Templates</h2>
+                <div id="templates-list"></div>
+                <button id="add-template" class="btn primary-btn">
+                    <i class="fas fa-plus"></i> New Template
+                </button>
+            </div>
+        </div>
+
+        <!-- Add Team Member Modal -->
+        <div id="team-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add Team Member</h2>
+                <form id="team-form">
+                    <input type="text" id="member-name" placeholder="Name" required>
+                    <input type="email" id="member-email" placeholder="Email" required>
+                    <select id="member-role">
+                        <option value="member">Team Member</option>
+                        <option value="leader">Team Leader</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button type="submit" class="btn primary-btn">Add Member</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
